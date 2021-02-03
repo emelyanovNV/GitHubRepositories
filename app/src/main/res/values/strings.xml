@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">GitHubRepositories</string>
+    <string name="repository_owner_avatar">Repository owner avatar</string>
+    <string name="query_search">Android</string>
+    <string name="sort_search">stars</string>
+    <string name="error">Failed to get data.\nPlease try again in a few minutes.</string>
+    <string name="share">Share</string>
+</resources>

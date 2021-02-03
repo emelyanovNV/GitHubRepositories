@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_app"
+    app:startDestination="@id/nav_list_repo">
+
+    <fragment
+        android:id="@+id/nav_list_repo"
+        android:name="ru.nemelianov.githubrepositories.ui.main.RepoListFragment"
+        android:label="List repositories">
+        <action
+            android:id="@+id/action_list_to_detail"
+            app:destination="@id/nav_detail_repo" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_detail_repo"
+        android:name="ru.nemelianov.githubrepositories.ui.detail.RepoDetailFragment"
+        android:label="Repository detail">
+        <argument
+            android:name="repo"
+            android:defaultValue="@null"
+            app:argType="ru.nemelianov.githubrepositories.model.gh_repository.RepoItem"
+            app:nullable="true" />
+    </fragment>
+</navigation>
