@@ -1,4 +1,4 @@
-package ru.nemelianov.githubrepositories.until
+package ru.nemelianov.githubrepositories.utils
 
 import androidx.annotation.StringRes
 

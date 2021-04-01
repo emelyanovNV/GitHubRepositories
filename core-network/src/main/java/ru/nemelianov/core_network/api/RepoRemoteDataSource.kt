@@ -1,18 +1,16 @@
 package ru.nemelianov.core_network.api
 
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import ru.nemelianov.core_network.api.params.GithubApiParams
 import ru.nemelianov.core_network.model.RepoDto
 import ru.nemelianov.core_network.until.NetworkStatus
-import javax.inject.Inject
 
-class RepoRemoteDataSource @Inject constructor(
+class RepoRemoteDataSource(
     private val api: GitHubApi
 ) {
-    private val channel =
-        ConflatedBroadcastChannel<PagingState<List<RepoDto>>>(PagingState.Initial)
+    private val itemsFlow =
+            MutableStateFlow<PagingState<List<RepoDto>>>(PagingState.Initial)
     private var params: GithubApiParams? = null
     private var totalCount = 0
     private var page = 1
@@ -26,7 +24,7 @@ class RepoRemoteDataSource @Inject constructor(
             is NetworkStatus.Success -> {
                 response.data?.let {
                     totalCount = it.totalCount
-                    channel.send(PagingState.Content(it.items))
+                    itemsFlow.value = PagingState.Content(it.items)
                 }
             }
             else -> {
@@ -38,14 +36,14 @@ class RepoRemoteDataSource @Inject constructor(
     @Synchronized
     suspend fun loadMore(candidatePosition: Int) {
         val params = this.params ?: return
-        val cache = channel.value
+        val cache = itemsFlow.value
         if (totalCount < page * DEFAULT_PAGE_SIZE) return
         if (cache is PagingState.Content && candidatePosition == cache.data.size - 1) {
             page += 1
-            channel.send(PagingState.Paging(cache.data))
+            itemsFlow.value = PagingState.Paging(cache.data)
             when (val response = safeApiCall { api.searchRepo(params.applyPagingParams(page)) }) {
                 is NetworkStatus.Success -> {
-                    response.data?.let { channel.send(PagingState.Content(cache.data.plus(it.items))) }
+                    response.data?.let { itemsFlow.value = PagingState.Content(cache.data.plus(it.items)) }
                 }
                 else -> {
                     sendErrorState()
@@ -55,15 +53,15 @@ class RepoRemoteDataSource @Inject constructor(
     }
 
     @Synchronized
-    private suspend fun sendErrorState() {
-        when (val cache = channel.value) {
-            is PagingState.Content -> channel.send(PagingState.Error(cache.data))
-            is PagingState.Paging -> channel.send(PagingState.Error(cache.availableContent))
-            else -> channel.send(PagingState.Error(null))
+    private fun sendErrorState() {
+        when (val cache = itemsFlow.value) {
+            is PagingState.Content -> itemsFlow.value = PagingState.Error(cache.data)
+            is PagingState.Paging -> itemsFlow.value = PagingState.Error(cache.availableContent)
+            else -> itemsFlow.value = PagingState.Error(null)
         }
     }
 
-    fun observe(): Flow<PagingState<List<RepoDto>>> = channel.asFlow()
+    fun observe(): Flow<PagingState<List<RepoDto>>> = itemsFlow
 
     private fun GithubApiParams.applyPagingParams(page: Int = 1): Map<String, String> = toMap()
         .toMutableMap()

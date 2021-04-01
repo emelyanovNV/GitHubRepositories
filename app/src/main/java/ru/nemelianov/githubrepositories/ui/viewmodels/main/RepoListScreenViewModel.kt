@@ -1,5 +1,6 @@
 package ru.nemelianov.githubrepositories.ui.viewmodels.main
 
+import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,7 @@ import javax.inject.Inject
 class RepoListScreenViewModel @Inject constructor(
     private val interactor: RepoListScreenInteractor
 ) : BaseViewModel() {
+    val isLoading = ObservableBoolean()
     private val _data = MutableLiveData<List<ListItem>>()
     val data: LiveData<List<ListItem>> = _data
 
@@ -21,12 +23,14 @@ class RepoListScreenViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Main) {
             interactor.data().collect { _data.value = it }
         }
-        initList()
+        loadData()
     }
 
-    fun initList() {
+    fun loadData() {
         viewModelScope.launch(Dispatchers.IO) {
+            isLoading.set(true)
             interactor.initList()
+            isLoading.set(false)
         }
     }
 

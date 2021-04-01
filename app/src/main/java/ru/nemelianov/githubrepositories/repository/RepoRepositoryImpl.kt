@@ -6,10 +6,9 @@ import ru.nemelianov.core_network.api.RepoRemoteDataSource
 import ru.nemelianov.core_network.api.params.GithubApiParams
 import ru.nemelianov.core_network.model.RepoDto
 import ru.nemelianov.githubrepositories.R
-import ru.nemelianov.githubrepositories.until.ResourceProvider
-import javax.inject.Inject
+import ru.nemelianov.githubrepositories.utils.ResourceProvider
 
-class RepoRepositoryImpl @Inject constructor(
+class RepoRepositoryImpl(
     private val dataSource: RepoRemoteDataSource,
     private val resources: ResourceProvider
 ) : RepoRepository {

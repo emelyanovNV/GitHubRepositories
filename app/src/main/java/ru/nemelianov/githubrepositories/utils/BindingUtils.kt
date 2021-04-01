@@ -1,4 +1,4 @@
-package ru.nemelianov.githubrepositories.until
+package ru.nemelianov.githubrepositories.utils
 
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.databinding.BindingAdapter

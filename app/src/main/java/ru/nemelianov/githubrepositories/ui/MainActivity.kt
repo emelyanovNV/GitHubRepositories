@@ -2,35 +2,28 @@ package ru.nemelianov.githubrepositories.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.navigation.NavController
-import androidx.navigation.findNavController
+import androidx.appcompat.widget.Toolbar
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI
-import kotlinx.android.synthetic.main.ac_main.*
+import androidx.navigation.ui.setupWithNavController
+import dagger.hilt.android.AndroidEntryPoint
 import ru.nemelianov.githubrepositories.R
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private lateinit var navController: NavController
-    private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_GitHubRepositories)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.ac_main)
-        setSupportActionBar(toolbar)
-        navController = findNavController(R.id.nav_host)
-        appBarConfiguration = AppBarConfiguration.Builder().build()
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            when (destination.id) {
-                R.id.nav_list_repo ->
-                    supportActionBar?.setDisplayHomeAsUpEnabled(false)
-                else ->
-                    supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            }
-        }
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
+        val navController = navHostFragment.navController
+        val appBarConfiguration = AppBarConfiguration(
+            topLevelDestinationIds = setOf(R.id.nav_list_repo),
+            fallbackOnNavigateUpListener = ::onSupportNavigateUp
+        )
+        findViewById<Toolbar>(R.id.toolbar)
+            .setupWithNavController(navController, appBarConfiguration)
     }
-
-    override fun onSupportNavigateUp() = NavigationUI.navigateUp(navController, appBarConfiguration)
-            || super.onSupportNavigateUp()
 }

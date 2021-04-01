@@ -2,23 +2,17 @@ package ru.nemelianov.githubrepositories.interactor.main
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import ru.nemelianov.core_network.api.GitHubApi
 import ru.nemelianov.core_network.api.PagingState
-import ru.nemelianov.core_network.api.RepoRemoteDataSource
 import ru.nemelianov.core_network.model.RepoDto
 import ru.nemelianov.githubrepositories.model.base.ListItem
 import ru.nemelianov.githubrepositories.model.gh_repository.ErrorRepoItem
 import ru.nemelianov.githubrepositories.model.gh_repository.ProgressRepoItem
 import ru.nemelianov.githubrepositories.model.gh_repository.RepoItem
-import ru.nemelianov.githubrepositories.repository.RepoRepositoryImpl
-import ru.nemelianov.githubrepositories.until.ResourceProvider
-import javax.inject.Inject
+import ru.nemelianov.githubrepositories.repository.RepoRepository
 
-class RepoListScreenInteractorImpl @Inject constructor(
-    api: GitHubApi,
-    resources: ResourceProvider
+class RepoListScreenInteractorImpl(
+    private val repoRepository: RepoRepository
 ) : RepoListScreenInteractor {
-    private val repoRepository = RepoRepositoryImpl(RepoRemoteDataSource(api), resources)
 
     override fun data(): Flow<List<ListItem>> = repoRepository.data().map { mapToType(it) }
 

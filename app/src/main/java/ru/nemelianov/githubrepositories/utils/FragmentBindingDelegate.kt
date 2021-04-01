@@ -1,4 +1,4 @@
-package ru.nemelianov.githubrepositories.ui.base
+package ru.nemelianov.githubrepositories.utils
 
 import android.view.View
 import androidx.fragment.app.Fragment

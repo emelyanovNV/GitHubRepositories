@@ -9,7 +9,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import ru.nemelianov.githubrepositories.R
 import ru.nemelianov.githubrepositories.databinding.FrRepoDetailBinding
-import ru.nemelianov.githubrepositories.ui.base.viewBinding
+import ru.nemelianov.githubrepositories.utils.viewBinding
 
 class RepoDetailFragment : Fragment(R.layout.fr_repo_detail) {
     private val binding by viewBinding { FrRepoDetailBinding.bind(it) }
